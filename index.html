@@ -867,5 +867,19 @@ function IconBtn({ children, onClick, disabled, title }) {
 ReactDOM.createRoot(document.getElementById("root")).render(<TablicList />);
 
 </script>
+<script>
+/* Servisni radnik radi samo preko http(s). Sa file:// registracija puca, pa
+   se i ne pokusava — alat i dalje radi, samo bez instalacije i offline rezima. */
+(function () {
+  'use strict';
+  if (location.protocol !== 'http:' && location.protocol !== 'https:') { return; }
+  if (!navigator.serviceWorker) { return; }
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {
+      /* Neuspela registracija nije greska koju korisnik treba da vidi. */
+    });
+  });
+}());
+</script>
 </body>
 </html>
