@@ -224,6 +224,7 @@ function TablicList() {
   const [pat, setPat] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [renaming, setRenaming] = useState(null);
+  const [confirmZero, setConfirmZero] = useState(false);
 
   const [theme, setTheme] = useState("tabla");
   const [font, setFont] = useState("novine");
@@ -334,6 +335,27 @@ function TablicList() {
   };
 
   const undoRound = () => setRounds((r) => r.slice(0, -1));
+
+  /* Sve na nulu: brisu se partije i table, igraci i imena ostaju — za novu
+     igru sa istim drustvom. Za prazan list sa novim imenima sluzi „Novi list".
+     Trazi drugi tap, jer bi se jednim promasajem izgubio cijeli rezultat. */
+  const zeroAll = () => {
+    if (!confirmZero) {
+      setConfirmZero(true);
+      return;
+    }
+    setRounds([]);
+    setTables(Object.fromEntries(entities.map((e) => [e.id, 0])));
+    setConfirmZero(false);
+  };
+
+  /* Potvrda sama pada nakon tri sekunde, da dugme ne ostane „naoruzano". */
+  useEffect(() => {
+    if (!confirmZero) return;
+    const t = setTimeout(() => setConfirmZero(false), 3000);
+    return () => clearTimeout(t);
+  }, [confirmZero]);
+
 
   /* Preimenovanje na samom listu: partije i table ostaju, mijenja se samo ime.
      Prazno ime se odbacuje — stari upis ostaje netaknut. */
@@ -551,6 +573,21 @@ function TablicList() {
             </IconBtn>
             <IconBtn onClick={undoRound} disabled={!rounds.length} title="Obriši zadnju partiju">
               <Undo2 size={16} />
+            </IconBtn>
+            <IconBtn
+              onClick={zeroAll}
+              disabled={!rounds.length && entities.every((e) => !tables[e.id])}
+              title={confirmZero ? "Tapni još jednom da potvrdiš" : "Sve na nulu — imena ostaju"}
+            >
+              <span
+                style={{
+                  fontFamily: mono, fontSize: 15, lineHeight: "16px",
+                  display: "block", width: 16, textAlign: "center",
+                  color: confirmZero ? INK : BONE,
+                }}
+              >
+                {confirmZero ? "?" : "0"}
+              </span>
             </IconBtn>
             <IconBtn onClick={reset} title="Novi list">
               <RotateCcw size={16} />
