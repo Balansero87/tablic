@@ -223,6 +223,7 @@ function TablicList() {
   const [touched, setTouched] = useState([]);
   const [pat, setPat] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [renaming, setRenaming] = useState(null);
 
   const [theme, setTheme] = useState("tabla");
   const [font, setFont] = useState("novine");
@@ -333,6 +334,16 @@ function TablicList() {
   };
 
   const undoRound = () => setRounds((r) => r.slice(0, -1));
+
+  /* Preimenovanje na samom listu: partije i table ostaju, mijenja se samo ime.
+     Prazno ime se odbacuje — stari upis ostaje netaknut. */
+  const rename = (id, value) => {
+    const cisto = value.trim();
+    setRenaming(null);
+    if (!cisto) return;
+    setEntities((es) => es.map((e) => (e.id === id ? { ...e, name: cisto } : e)));
+  };
+
   const reset = () => {
     setPhase("setup");
     setRounds([]);
@@ -558,14 +569,40 @@ function TablicList() {
         )}
 
         <div className="relative">
+          {/* min-w-0 na celiji: bez toga dugme sa nowrap tekstom rasiri grid
+              kolonu (min-width grid stavke je podrazumijevano auto) i list ode van ekrana. */}
           <div className="grid" style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}>
             {entities.map((e) => (
-              <div
-                key={e.id}
-                className="px-2 pb-2 text-center truncate"
-                style={{ fontFamily: display, fontSize: big ? 21 : 15, letterSpacing: TRACK, color: BONE }}
-              >
-                {e.name.toUpperCase()}
+              <div key={e.id} className="px-2 pb-2 text-center truncate min-w-0">
+                {renaming === e.id ? (
+                  <input
+                    autoFocus
+                    defaultValue={e.name}
+                    onFocus={(ev) => ev.target.select()}
+                    onBlur={(ev) => rename(e.id, ev.target.value)}
+                    onKeyDown={(ev) => {
+                      if (ev.key === "Enter") ev.target.blur();
+                      if (ev.key === "Escape") setRenaming(null);
+                    }}
+                    className="w-full text-center outline-none"
+                    style={{
+                      fontFamily: display, fontSize: big ? 21 : 15, letterSpacing: TRACK,
+                      color: BONE, background: PAPER_2, border: 0, borderRadius: 2, padding: "2px 4px",
+                    }}
+                  />
+                ) : (
+                  <button
+                    onClick={() => setRenaming(e.id)}
+                    title="Tapni da promijeniš ime"
+                    className="block w-full truncate"
+                    style={{
+                      fontFamily: display, fontSize: big ? 21 : 15, letterSpacing: TRACK,
+                      color: BONE, background: "transparent", border: 0,
+                    }}
+                  >
+                    {e.name.toUpperCase()}
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -652,7 +689,7 @@ function TablicList() {
         </div>
 
         <p className="mt-6 text-center" style={{ fontFamily: body, fontSize: 13, color: MUTED }}>
-          Tapni u zadnji red da upišeš tablu · partija {rounds.length + 1}
+          Tapni u zadnji red da upišeš tablu · tapni ime da ga promijeniš · partija {rounds.length + 1}
           {rounds.length < 6 ? " od 6" : ""}
         </p>
       </div>
