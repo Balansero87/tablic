@@ -1,0 +1,4 @@
+/* Ulaz za Tailwind CLI — vidi napravi-css.js. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

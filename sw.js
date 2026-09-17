@@ -1,7 +1,7 @@
 /*
  * Servisni radnik za Tablić.
  *
- * Kes je prvi, ne mreza: sve sto aplikaciji treba lezi uz nju — app.js,
+ * Kes je prvi, ne mreza: sve sto aplikaciji treba lezi uz nju — app.js, CSS,
  * biblioteke i fontovi u lib/ — pa je offline normalno stanje a ne rezervni
  * plan. Nista ne dolazi spolja. Nova verzija se povlaci u pozadini i vidi se
  * pri sljedecem otvaranju.
@@ -11,13 +11,13 @@
  */
 'use strict';
 
-var KES = 'tablic-v4';
+var KES = 'tablic-v5';
 
 var FAJLOVI = [
   './',
   'index.html',
   'app.js',
-  'lib/tailwind.js',
+  'lib/tailwind.css',
   'lib/react.js',
   'lib/react-dom.js',
   'lib/fontovi.css',

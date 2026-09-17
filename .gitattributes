@@ -1,0 +1,4 @@
+# Sve tekstualno sa LF, da git na Windowsu ne upozorava pri svakom commitu.
+* text=auto eol=lf
+*.png binary
+*.woff2 binary

@@ -46,7 +46,9 @@ se povuče u pozadini i vidi se pri sljedećem otvaranju.
 | `app.jsx` | **izvor aplikacije** (React + JSX) — ovo se uređuje |
 | `app.js` | prevedeni `app.jsx` — generisan, ne uređuje se ručno |
 | `prevedi.js` | `node prevedi.js` — prevodi `app.jsx` u `app.js`; Babel skine u `alat/` samo prvi put |
-| `lib/` | React, ReactDOM i Tailwind, uz aplikaciju — nijedan CDN |
+| `lib/` | React i ReactDOM, uz aplikaciju — nijedan CDN |
+| `lib/tailwind.css` | gotov CSS samo sa klasama koje aplikacija koristi — generisan |
+| `napravi-css.js`, `tailwind.config.js`, `tailwind.ulaz.css` | `node napravi-css.js` — pravi `lib/tailwind.css` Tailwindovim CLI-jem, koji skine u `alat/` samo prvi put |
 | `lib/fontovi.css`, `lib/fontovi/` | svih osam porodica fontova, lokalno (latinica i latinica-ext) |
 | `skini-fontove.js` | `node skini-fontove.js` — skine fontove sa Google Fonts u `lib/` i ispiše spisak za `sw.js` |
 | `sw.js` | service worker, keš je prvi |
@@ -59,8 +61,12 @@ se povuče u pozadini i vidi se pri sljedećem otvaranju.
 
 Uredi `app.jsx`, pokreni gornju komandu, otvori stranicu. JSX se prevodi
 jednom ovdje, a ne u svakom telefonu — zato stranica ne vuče Babel (3 MB) i
-otvara se odmah. Ako promijeniš spisak fajlova koje aplikacija učitava,
-podigni `KES` u `sw.js`, inače stari keš ostane.
+otvara se odmah.
+
+Ako dodaš **novu Tailwind klasu**, pokreni i `node napravi-css.js` — CSS
+sadrži samo klase koje su bile u kodu kad je napravljen, pa nova bez toga
+nema stil. Ako promijeniš spisak fajlova koje aplikacija učitava, podigni
+`KES` u `sw.js`, inače stari keš ostane.
 
 ## Samoprovera
 
