@@ -1,6 +1,9 @@
 # Tablić — list za pisanje
 
-Brojač bodova za tablić. Radi u pregledniku, bez instalacije i bez servera.
+Brojač bodova za tablić. Radi u pregledniku, bez instalacije i bez servera;
+na telefon se instalira kao aplikacija i radi bez interneta.
+
+Objavljeno na: https://balansero87.github.io/tablic/
 
 ## Bodovanje
 
@@ -20,27 +23,53 @@ Brojač bodova za tablić. Radi u pregledniku, bez instalacije i bez servera.
 2. Tokom igre tapni u zadnji red kod igrača da mu upišeš tablu.
 3. Kad se špil istroši, pritisni **Upiši partiju** i unesi bodove jednom igraču
    — drugi automatski dobija ostatak do 25. Dugme **PAT** spušta zbir na 22.
-4. Zbir se računa sam. Rezultat i izgled se pamte u pregledniku.
+4. Ime igrača mijenjaš i usred igre — tapni ga u zaglavlju i prepiši. Partije
+   ostaju.
+5. Dugmad gore desno: paleta mijenja izgled, **↶** briše zadnju partiju,
+   **0** vraća rezultat na nulu uz iste igrače, **↻** otvara novi list i briše
+   i imena. „0" i „↻" traže drugi tap u roku od tri sekunde — jedan promašaj
+   ne briše ništa.
+6. Rezultat i izgled se pamte u pregledniku, na tom uređaju.
 
-Ikonica palete gore desno mijenja pozadinu, slova i boju mastila.
+## Na telefonu
 
-## Objava na GitHub Pages
+Otvori adresu u Chrome-u → meni (⋮) → **Instaliraj aplikaciju**. Na iPhone-u:
+Safari → dugme za dijeljenje → **Add to Home Screen**. Otvara se preko cijelog
+ekrana, sa ikonicom, i poslije prvog otvaranja radi bez interneta. Nova verzija
+se povuče u pozadini i vidi se pri sljedećem otvaranju.
 
-    git init
-    git add .
-    git commit -m "Tablić"
-    git branch -M main
-    git remote add origin https://github.com/KORISNIK/tablic.git
-    git push -u origin main
+## Šta je gdje
 
-Zatim u repozitoriju: **Settings → Pages → Source: Deploy from a branch →
-Branch: main / (root) → Save**. Za minutu je dostupno na
-`https://KORISNIK.github.io/tablic/`.
+| Fajl | Šta je |
+|---|---|
+| `index.html` | ljuska stranice — učitava `lib/` i `app.js` |
+| `app.jsx` | **izvor aplikacije** (React + JSX) — ovo se uređuje |
+| `app.js` | prevedeni `app.jsx` — generisan, ne uređuje se ručno |
+| `prevedi.js` | `node prevedi.js` — prevodi `app.jsx` u `app.js`; Babel skine u `alat/` samo prvi put |
+| `lib/` | React, ReactDOM i Tailwind, uz aplikaciju — nijedan CDN |
+| `sw.js` | service worker, keš je prvi |
+| `manifest.json`, `ikona-192.png`, `ikona-512.png` | PWA omot |
+| `napravi-ikone.js` | `node napravi-ikone.js` — generiše obje ikone, bez zavisnosti |
 
-Na telefonu otvori tu adresu i izaberi "Dodaj na početni ekran" — otvara se
-kao aplikacija, preko cijelog ekrana.
+## Izmjena koda
 
-## Napomena o brzini
+    node prevedi.js
 
-`index.html` prevodi JSX u pregledniku preko Babela, pa se prvi put učitava
-oko sekundu duže. Zauzvrat nema build koraka i nema `node_modules`.
+Uredi `app.jsx`, pokreni gornju komandu, otvori stranicu. JSX se prevodi
+jednom ovdje, a ne u svakom telefonu — zato stranica ne vuče Babel (3 MB) i
+otvara se odmah. Ako promijeniš spisak fajlova koje aplikacija učitava,
+podigni `KES` u `sw.js`, inače stari keš ostane.
+
+## Samoprovera
+
+    index.html#test
+
+Umjesto aplikacije ispiše rezultat 25 tvrdnji o bodovanju — ostatak do 25 i
+22, zbirovi, pobjednik — i u naslov kartice stavi `OK 25/25` ili `PALO n/25`.
+Iz konzole: `samoprovera()`.
+
+## Internet
+
+Ne treba. Sve što aplikaciji treba leži uz nju. Jedino fontovi dolaze sa
+Google Fonts; bez njih se koriste rezervni, a nakon prvog otvaranja sa
+internetom i oni ostanu u kešu.

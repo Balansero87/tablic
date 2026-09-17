@@ -1,65 +1,38 @@
 /*
  * Servisni radnik za Tablić.
  *
- * Kes je prvi, ne mreza: alat nema sta da dovuce sa servera, pa je offline
- * normalno stanje a ne rezervni plan.
+ * Kes je prvi, ne mreza: sve sto aplikaciji treba lezi uz nju — app.js i
+ * biblioteke u lib/ — pa je offline normalno stanje a ne rezervni plan.
+ * Nova verzija se povlaci u pozadini i vidi se pri sljedecem otvaranju.
  *
- * Za razliku od RadGeld-a, ovde se keširaju i fajlovi sa CDN-a — React,
- * Tailwind i Babel se ucitavaju spolja, pa bez njih u kesu offline ne vredi
- * nista. Oni idu odvojeno i pojedinacno, jer addAll pada ceo ako jedan
- * zahtev ne prodje, a strani server ne mora uvek odgovoriti.
+ * Jedino sto jos dolazi spolja su Google fontovi. Oni se ne predkesiraju,
+ * jer nisu nuzni (bez njih rade rezervni fontovi), ali se pri prvom online
+ * otvaranju zapamte kroz fetch handler — zato on prima i "cors" odgovore,
+ * ne samo "basic".
  *
  * Kad se promeni spisak fajlova, MORA da se promeni i ime kesa — inace
  * "activate" ne obrise stari.
  */
 'use strict';
 
-var KES = 'tablic-v2';
+var KES = 'tablic-v3';
 
 var FAJLOVI = [
   './',
   'index.html',
+  'app.js',
+  'lib/tailwind.js',
+  'lib/react.js',
+  'lib/react-dom.js',
   'manifest.json',
   'ikona-192.png',
   'ikona-512.png'
 ];
 
-var SPOLJNI = [
-  'https://cdn.tailwindcss.com/',
-  'https://unpkg.com/react@18/umd/react.production.min.js',
-  'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-  'https://unpkg.com/@babel/standalone@7.29.8/babel.min.js'
-];
-
-/*
- * unpkg salje CORS zaglavlja, pa se njegov odgovor moze procitati i
- * proveriti. cdn.tailwindcss.com ih ne salje — tamo obican fetch puca, pa
- * ide "no-cors" i u kes ulazi neproziran odgovor. Takav se ne moze
- * pregledati (status je uvek 0), ali ga <script src> uredno izvrsi.
- */
-function dodajSpoljne(kes) {
-  return Promise.all(SPOLJNI.map(function (adresa) {
-    return fetch(adresa).then(function (odgovor) {
-      if (odgovor && odgovor.ok) { return kes.put(adresa, odgovor); }
-      return null;
-    }).catch(function () {
-      return fetch(adresa, { mode: 'no-cors' }).then(function (odgovor) {
-        if (odgovor) { return kes.put(adresa, odgovor); }
-        return null;
-      }).catch(function () {
-        // Strani server nije dostupan — instalacija se zbog toga ne prekida.
-        return null;
-      });
-    });
-  }));
-}
-
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(KES).then(function (kes) {
-      return kes.addAll(FAJLOVI).then(function () {
-        return dodajSpoljne(kes);
-      });
+      return kes.addAll(FAJLOVI);
     }).then(function () {
       return self.skipWaiting();
     })
@@ -85,7 +58,7 @@ self.addEventListener('fetch', function (e) {
       // Osvezavanje u pozadini: odgovor stize iz kesa odmah, a sledeci put
       // je novija verzija. Pad mreze se ignorise jer offline nije greska.
       var samreze = fetch(e.request).then(function (odgovor) {
-        // "basic" je sa ovog servera, "cors" su CDN fajlovi — oba vredi cuvati.
+        // "basic" je sa ovog servera, "cors" su Google fontovi.
         if (odgovor && odgovor.status === 200 &&
             (odgovor.type === 'basic' || odgovor.type === 'cors')) {
           var kopija = odgovor.clone();
