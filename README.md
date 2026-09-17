@@ -47,6 +47,8 @@ se povuče u pozadini i vidi se pri sljedećem otvaranju.
 | `app.js` | prevedeni `app.jsx` — generisan, ne uređuje se ručno |
 | `prevedi.js` | `node prevedi.js` — prevodi `app.jsx` u `app.js`; Babel skine u `alat/` samo prvi put |
 | `lib/` | React, ReactDOM i Tailwind, uz aplikaciju — nijedan CDN |
+| `lib/fontovi.css`, `lib/fontovi/` | svih osam porodica fontova, lokalno (latinica i latinica-ext) |
+| `skini-fontove.js` | `node skini-fontove.js` — skine fontove sa Google Fonts u `lib/` i ispiše spisak za `sw.js` |
 | `sw.js` | service worker, keš je prvi |
 | `manifest.json`, `ikona-192.png`, `ikona-512.png` | PWA omot |
 | `napravi-ikone.js` | `node napravi-ikone.js` — generiše obje ikone, bez zavisnosti |
@@ -70,6 +72,6 @@ Iz konzole: `samoprovera()`.
 
 ## Internet
 
-Ne treba. Sve što aplikaciji treba leži uz nju. Jedino fontovi dolaze sa
-Google Fonts; bez njih se koriste rezervni, a nakon prvog otvaranja sa
-internetom i oni ostanu u kešu.
+Ne treba. Sve što aplikaciji treba — kod, biblioteke i fontovi — leži uz nju
+u `lib/`; stranica ne šalje nijedan zahtjev van svog servera. Poslije prvog
+otvaranja service worker ima sve u kešu, pa radi i bez ikakve mreže.

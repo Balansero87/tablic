@@ -899,7 +899,6 @@ function Shell({ children, theme, font, ink }) {
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=Playfair+Display:wght@500;700&family=Lora:wght@400;600&family=Space+Grotesk:wght@400;600&family=Space+Mono:wght@400;700&display=swap');
         input[type=number]::-webkit-outer-spin-button,
         input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
       `}</style>
